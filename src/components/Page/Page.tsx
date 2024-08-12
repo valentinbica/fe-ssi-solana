@@ -1,6 +1,6 @@
 "use client";
-import React, { ReactNode } from "react";
-import { Layout, Menu, Typography } from "antd";
+import React, { ReactNode, useCallback } from "react";
+import { Button, Col, Layout, Menu, notification, Row, Typography } from "antd";
 import cs from "classnames";
 import {
   BankOutlined,
@@ -9,10 +9,23 @@ import {
 } from "@ant-design/icons";
 
 import styles from "./styles.module.css";
+import { Link } from "react-router-dom";
+import WalletContextProvider from "../Wallet/WalletContextProvider";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PhantomWalletName } from "@solana/wallet-adapter-phantom";
 
-const { Content, Sider } = Layout;
+const { Content, Sider, Header } = Layout;
 
-export default function Page({ children }: { children: ReactNode }) {
+export default function Page({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  const { connection } = useConnection();
+  const { connected, connect, select } = useWallet();
+
   return (
     <Layout className={styles.layout}>
       <Sider width={247} className={styles.sider}>
@@ -24,26 +37,59 @@ export default function Page({ children }: { children: ReactNode }) {
           mode="vertical"
           defaultSelectedKeys={["1"]}
           defaultOpenKeys={["sub1"]}
-          items={[
-            {
-              label: "Wallet",
-              key: "/wallet",
-              icon: <WalletOutlined />,
-            },
-            {
-              label: "VC",
-              key: "/vc",
-              icon: <FileDoneOutlined />,
-            },
-            {
-              label: "Issuer",
-              key: "/issuer",
-              icon: <BankOutlined />,
-            },
-          ]}
-        />
+          onClick={(e) => {
+            console.log({ e });
+          }}
+        >
+          <Menu.Item key="/">
+            <Link to="/">
+              <WalletOutlined />
+              <span>Wallet</span>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/vc">
+            <Link to="/vc">
+              <FileDoneOutlined />
+              <span>VC</span>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/issuer">
+            <Link to="/issuer">
+              <BankOutlined />
+              <span>Issuer</span>
+            </Link>
+          </Menu.Item>
+        </Menu>
       </Sider>
-      <Layout style={{ padding: "0 24px 24px" }}>
+      <Layout>
+        <Header className={styles.header}>
+          <Row justify="space-between" align="middle">
+            <Col lg="12">
+              <Typography.Title className="jersey-15-regular primary-color no-mg">
+                {title}
+              </Typography.Title>
+            </Col>
+            <Col lg="12">
+              <Button
+                size="large"
+                type="primary"
+                onClick={async () => {
+                  select(PhantomWalletName);
+                  try {
+                    await connect();
+                  } catch (ex) {
+                    notification.warning({
+                      message: "Wallet not found",
+                      description: "Please install Phantom wallet",
+                    });
+                  }
+                }}
+              >
+                Connect Wallet
+              </Button>
+            </Col>
+          </Row>
+        </Header>
         <Content className={styles.content}>{children}</Content>
       </Layout>
     </Layout>

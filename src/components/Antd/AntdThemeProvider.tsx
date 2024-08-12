@@ -13,7 +13,6 @@ export const AntdThemeProvider = ({ children }: { children: ReactNode }) => {
         components: {
           Layout: {
             headerHeight: 94,
-            headerPadding: "32px",
             bodyBg: "#001529",
           },
           Menu: {
