@@ -9,8 +9,7 @@ import {
 } from "@ant-design/icons";
 
 import styles from "./styles.module.css";
-import { Link } from "react-router-dom";
-import WalletContextProvider from "../Wallet/WalletContextProvider";
+import { Link, useLocation } from "react-router-dom";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PhantomWalletName } from "@solana/wallet-adapter-phantom";
 
@@ -24,7 +23,17 @@ export default function Page({
   title: string;
 }) {
   const { connection } = useConnection();
-  const { connected, connect, select } = useWallet();
+  const { connected, connect, select, disconnect } = useWallet();
+
+  console.log({
+    connected,
+  });
+
+  let location = useLocation();
+
+  console.log({
+    location,
+  });
 
   return (
     <Layout className={styles.layout}>
@@ -35,7 +44,7 @@ export default function Page({
         <Menu
           className={styles.menu}
           mode="vertical"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[location.pathname]}
           defaultOpenKeys={["sub1"]}
           onClick={(e) => {
             console.log({ e });
@@ -72,8 +81,15 @@ export default function Page({
             <Col lg="12">
               <Button
                 size="large"
-                type="primary"
+                type={connected ? "link" : "primary"}
                 onClick={async () => {
+                  if (connected) {
+                    await disconnect();
+                    notification.info({
+                      message: "Wallet disconnected",
+                      placement: "bottomRight",
+                    });
+                  }
                   select(PhantomWalletName);
                   try {
                     await connect();
@@ -81,11 +97,12 @@ export default function Page({
                     notification.warning({
                       message: "Wallet not found",
                       description: "Please install Phantom wallet",
+                      placement: "bottomRight",
                     });
                   }
                 }}
               >
-                Connect Wallet
+                {connected ? "Disconnect Wallet" : "Connect Wallet"}{" "}
               </Button>
             </Col>
           </Row>

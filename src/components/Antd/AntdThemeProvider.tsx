@@ -11,6 +11,7 @@ export const AntdThemeProvider = ({ children }: { children: ReactNode }) => {
           fontSizeSM: 16,
         },
         components: {
+          Card: {},
           Layout: {
             headerHeight: 94,
             bodyBg: "#001529",
