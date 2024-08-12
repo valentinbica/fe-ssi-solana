@@ -1,0 +1,21 @@
+.white {
+    color: white;
+}
+
+.sider {
+    /*border-right: 1px solid rgba(253, 253, 253, 0.12);*/
+    border-inline-end: 1px solid rgba(253, 253, 253, 0.12);
+}
+
+.sider h1 {
+    padding-left: 28px;
+}
+
+.layout {
+    min-height: 100vh;
+}
+
+body .menu {
+    border: 0;
+    border-inline-end: 0 !important;
+}

@@ -1,25 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Wallet from "./pages/Wallet/Wallet";
+import Issuer from "./pages/Issuer/Issuer";
+import VC from "./pages/VC/VC";
+import { AntdThemeProvider } from "./components/Antd/AntdThemeProvider";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AntdThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Wallet />} />
+          <Route path="/issuer" element={<Issuer />} />
+          <Route path="/vc" element={<VC />} />
+        </Routes>
+      </Router>
+    </AntdThemeProvider>
   );
 }
 
