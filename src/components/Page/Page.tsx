@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useCallback } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { Button, Col, Layout, Menu, notification, Row, Typography } from "antd";
 import cs from "classnames";
 import {
@@ -10,7 +10,7 @@ import {
 
 import styles from "./styles.module.css";
 import { Link, useLocation } from "react-router-dom";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { PhantomWalletName } from "@solana/wallet-adapter-phantom";
 
 const { Content, Sider, Header } = Layout;
@@ -22,18 +22,17 @@ export default function Page({
   children: ReactNode;
   title: string;
 }) {
-  const { connection } = useConnection();
-  const { connected, connect, select, disconnect } = useWallet();
-
-  console.log({
-    connected,
-  });
+  const { connected, connect, select, disconnect, publicKey } = useWallet();
 
   let location = useLocation();
 
   console.log({
-    location,
+    publicKey,
   });
+
+  useEffect(() => {
+    select(PhantomWalletName);
+  }, [select]);
 
   return (
     <Layout className={styles.layout}>
@@ -90,13 +89,13 @@ export default function Page({
                       placement: "bottomRight",
                     });
                   }
-                  select(PhantomWalletName);
                   try {
                     await connect();
                   } catch (ex) {
+                    console.log(ex);
                     notification.warning({
                       message: "Wallet not found",
-                      description: "Please install Phantom wallet",
+                      description: "Please install Phantom wallet or enable it",
                       placement: "bottomRight",
                     });
                   }

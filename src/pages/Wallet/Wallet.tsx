@@ -2,7 +2,6 @@ import Page from "../../components/Page/Page";
 import {
   Alert,
   Button,
-  Card,
   Col,
   Descriptions,
   Form,
@@ -12,6 +11,7 @@ import {
 } from "antd";
 import React from "react";
 import styles from "./styles.module.css";
+import { Card } from "../../components/Card/Card";
 
 export default function Wallet() {
   return (
@@ -63,7 +63,7 @@ export default function Wallet() {
       </Row>
       <Row>
         <Col span={8}>
-          <Card title="did:ebsi:1234" bordered className={styles.card}>
+          <Card title="did:ebsi:1234">
             <Descriptions title="User Info" column={1}>
               <Descriptions.Item label="Email">Zhou Maomao</Descriptions.Item>
               <Descriptions.Item label="First Name">
