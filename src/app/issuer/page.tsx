@@ -1,12 +1,11 @@
+'use client';
 import Page from "../../components/Page/Page";
 import { Button, Col, Form, Input, Row, Select } from "antd";
-import React from "react";
-import { useForm } from "antd/es/form/Form";
 
 export default function Issuer() {
-  const [form] = useForm();
+  const [form] = Form.useForm();
   return (
-    <Page title="Issuer">
+    <Page title="Index">
       <Row>
         <Col lg={4}>
           <Form form={form}>

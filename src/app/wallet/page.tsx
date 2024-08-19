@@ -1,3 +1,4 @@
+"use client";
 import Page from "../../components/Page/Page";
 import {
   Alert,
@@ -10,10 +11,11 @@ import {
   Typography,
 } from "antd";
 import React from "react";
-import styles from "./styles.module.css";
-import { Card } from "../../components/Card/Card";
+import { Card } from "@/components/Card/Card";
+import { useDid } from "./useDid";
 
 export default function Wallet() {
+  const { createDid } = useDid();
   return (
     <Page title="Wallet">
       <Row>
@@ -22,6 +24,7 @@ export default function Wallet() {
           message="This is a oversimplified example of SSI used for demo purposes "
         />
       </Row>
+      <Button onClick={createDid}>Create DID</Button>
       <Typography.Title className="jersey-15-regular">
         You seem not to have Digital Identity yet. Please create one.
       </Typography.Title>

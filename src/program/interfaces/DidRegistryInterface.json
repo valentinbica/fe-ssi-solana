@@ -1,0 +1,123 @@
+{
+  "address": "EkeZgmB4FUytsNCtwymgmwqMqAHcbxtTymbENRAcwVBN",
+  "metadata": {
+    "name": "did_registry",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "register_did",
+      "discriminator": [
+        83,
+        145,
+        243,
+        215,
+        189,
+        3,
+        25,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "did_entry",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "string"
+        },
+        {
+          "name": "did_document",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_did_document",
+      "discriminator": [
+        64,
+        216,
+        17,
+        91,
+        205,
+        94,
+        45,
+        57
+      ],
+      "accounts": [
+        {
+          "name": "did_entry",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "did_document",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "DidEntry",
+      "discriminator": [
+        97,
+        3,
+        248,
+        216,
+        117,
+        74,
+        83,
+        126
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "You are not authorized to perform this action."
+    }
+  ],
+  "types": [
+    {
+      "name": "DidEntry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "did",
+            "type": "string"
+          },
+          {
+            "name": "did_document",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

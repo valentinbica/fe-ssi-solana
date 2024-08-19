@@ -1,17 +1,18 @@
 "use client";
-import React, { ReactNode, useEffect } from "react";
+
+import { ReactNode, useEffect } from 'react';
 import { Button, Col, Layout, Menu, notification, Row, Typography } from "antd";
 import cs from "classnames";
-import {
-  BankOutlined,
-  FileDoneOutlined,
-  WalletOutlined,
-} from "@ant-design/icons";
+
+import BankOutlined from "@ant-design/icons/BankOutlined";
+import FileDoneOutlined from "@ant-design/icons/FileDoneOutlined";
+import WalletOutlined from "@ant-design/icons/WalletOutlined";
 
 import styles from "./styles.module.css";
-import { Link, useLocation } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PhantomWalletName } from "@solana/wallet-adapter-phantom";
+import {usePathname} from 'next/navigation';
+import Link from 'next/link';
 
 const { Content, Sider, Header } = Layout;
 
@@ -22,12 +23,13 @@ export default function Page({
   children: ReactNode;
   title: string;
 }) {
-  const { connected, connect, select, disconnect, publicKey } = useWallet();
+  const { connected, connect, select, disconnect, publicKey, wallet } = useWallet();
 
-  let location = useLocation();
+  let pathname = usePathname();
 
   console.log({
     publicKey,
+    wallet
   });
 
   useEffect(() => {
@@ -43,26 +45,26 @@ export default function Page({
         <Menu
           className={styles.menu}
           mode="vertical"
-          defaultSelectedKeys={[location.pathname]}
+          defaultSelectedKeys={[pathname || ""]}
           defaultOpenKeys={["sub1"]}
           onClick={(e) => {
             console.log({ e });
           }}
         >
-          <Menu.Item key="/">
-            <Link to="/">
+          <Menu.Item key="/wallet">
+            <Link href="/wallet">
               <WalletOutlined />
               <span>Wallet</span>
             </Link>
           </Menu.Item>
           <Menu.Item key="/vc">
-            <Link to="/vc">
+            <Link href="/vc">
               <FileDoneOutlined />
               <span>VC</span>
             </Link>
           </Menu.Item>
           <Menu.Item key="/issuer">
-            <Link to="/issuer">
+            <Link href="/issuer">
               <BankOutlined />
               <span>Issuer</span>
             </Link>

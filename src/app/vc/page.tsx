@@ -1,12 +1,13 @@
+'use client';
 import Page from "../../components/Page/Page";
 import { Button, Col, Descriptions, Modal, Row, Space } from "antd";
-import { Card } from "../../components/Card/Card";
+import { Card } from "@/components/Card/Card";
 import React from "react";
 import { EyeOutlined } from "@ant-design/icons";
 import { JsonView, darkStyles } from "react-json-view-lite";
 import "react-json-view-lite/dist/index.css";
 
-export default function VC() {
+export default function Wallet() {
   return (
     <Page title="VC">
       <Row gutter={12}>
