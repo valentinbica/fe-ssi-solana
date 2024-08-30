@@ -29,7 +29,8 @@ export default function Page({
 
   console.log({
     publicKey,
-    wallet
+    wallet,
+    connected,
   });
 
   useEffect(() => {

@@ -1,25 +1,75 @@
-import * as web3 from "@solana/web3.js";
-import { Idl, Program } from "@project-serum/anchor";
-import { useWallet } from "@solana/wallet-adapter-react";
+import * as web3 from '@solana/web3.js';
+import { AnchorProvider, Idl, Program } from '@coral-xyz/anchor';
+import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
+import { notification } from 'antd';
 
-import config from "../../config";
-import DidRegistryInterface from "../../program/interfaces/DidRegistryInterface.json";
-import { useCallback } from "react";
+import { useCallback, useEffect } from 'react';
+import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
+import DidRegistryInterface from '../../program/interfaces/did_registry.json';
 
 export function useDid() {
-  const { wallet, publicKey } = useWallet();
+  const { publicKey, signTransaction, sendTransaction, wallet } = useWallet();
+  const anchorWallet = useAnchorWallet();
+
+  const getProvider = useCallback(() => {
+    if (!anchorWallet) {
+      return null;
+    }
+    const connection = new Connection(
+      web3.clusterApiUrl('devnet'),
+      'confirmed'
+    );
+    return new AnchorProvider(connection, anchorWallet, {
+      preflightCommitment: 'processed',
+    });
+  }, [anchorWallet]);
+
+  const registerDid = useCallback(
+    async (did: string, didDocument: string) => {
+      const provider = getProvider();
+
+      if (!provider || !publicKey || !anchorWallet) {
+        return;
+      }
+
+      const program = new Program(
+        DidRegistryInterface as Idl,
+        provider
+      ) as Program<Idl>;
+
+      if (wallet?.adapter?.publicKey?.toBuffer()) {
+        const [didEntryPda, bump] = PublicKey.findProgramAddressSync(
+          [Buffer.from('did_entry'), wallet?.adapter.publicKey?.toBuffer()],
+          program.programId
+        );
+        await program.methods
+          .registerDid(did, didDocument, bump)
+          .accounts({
+            didEntry: didEntryPda,
+            owner: provider.publicKey || '',
+            system_program: SystemProgram.programId,
+          })
+          .rpc();
+        notification.success({
+          message: 'Did registered successfully',
+          placement: 'bottomRight',
+        });
+      }
+    },
+    [anchorWallet, getProvider, publicKey, wallet?.adapter.publicKey]
+  );
 
   const createDid = useCallback(async () => {
     try {
       if (publicKey) {
-        const did = `did:sol:${publicKey}`;
+        const did = `did:sol:${publicKey.toBase58()}`;
         const didDocument = {
-          "@context": "https://www.w3.org/ns/did/v1",
+          '@context': 'https://www.w3.org/ns/did/v1',
           id: did,
           verificationMethod: [
             {
               id: `${did}#phantom`,
-              type: "Ed25519VerificationKey2020",
+              type: 'Ed25519VerificationKey2020',
               controller: `${did}`,
               publicKeyBase58: publicKey.toBase58(),
             },
@@ -29,62 +79,47 @@ export function useDid() {
           service: [
             {
               id: `${did}#service-1`,
-              type: "MessagingService",
-              serviceEndpoint: "https://example.com/messages/123456",
+              type: 'MessagingService',
+              serviceEndpoint: `https://fe-ssi-solana.vercel.app/api/did-registry/${did}`,
             },
           ],
         };
-        console.log({
-          didDocument,
-        });
+        await registerDid(did, JSON.stringify(didDocument));
       }
     } catch (error) {
-      console.error("Failed to create DID:", error);
+      notification.error({
+        message: 'Failed to create DID',
+        description: error?.toString(),
+        duration: 10,
+      });
     }
-  }, [publicKey]);
+  }, [publicKey, registerDid]);
 
-  async function registerDid(did: string, didDocument: string) {
-    const programId = new web3.PublicKey(config.PROGRAM_ID);
-    const programDataAccount = new web3.PublicKey(config.DATA_ACCOUNT_PUBKEY);
-    const transaction = new web3.Transaction();
+  const getDidDocument = useCallback(async () => {
+    const provider = getProvider();
+
+    if (!provider) {
+      return;
+    }
 
     const program = new Program(
-      JSON.parse(JSON.stringify(DidRegistryInterface)),
-      programId,
+      DidRegistryInterface as Idl,
+      provider
     ) as Program<Idl>;
 
-    const instruction = new web3.TransactionInstruction({
-      keys: [
-        {
-          pubkey: programDataAccount,
-          isSigner: false,
-          isWritable: true,
-        },
-      ],
-      programId,
-    });
-
-    // program.methods.registerDid(did, didDocument, {
-    //   accounts: {
-    //     didEntry,
-    //     owner: provider.wallet.publicKey,
-    //     systemProgram: anchor.web3.SystemProgram.programId,
-    //   },
-    // });
-  }
-
-  // async function getDidDocument(did) {
-  //   const [didEntry, _] = await PublicKey.findProgramAddress(
-  //     [Buffer.from(did)],
-  //     program.programId,
-  //   );
-  //
-  //   const didData = await program.account.didEntry.fetch(didEntry);
-  //   return didData.didDocument;
-  // }
+    if (wallet?.adapter?.publicKey?.toBuffer()) {
+      const [didEntryPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from('did_entry'), wallet?.adapter.publicKey?.toBuffer()],
+        program.programId
+      );
+      return program.account.didEntry.fetch(didEntryPda);
+    }
+    return null;
+  }, [getProvider, wallet?.adapter.publicKey]);
 
   return {
     registerDid,
     createDid,
+    getDidDocument,
   };
 }

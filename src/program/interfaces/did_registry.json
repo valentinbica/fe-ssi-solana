@@ -1,5 +1,5 @@
 {
-  "address": "EkeZgmB4FUytsNCtwymgmwqMqAHcbxtTymbENRAcwVBN",
+  "address": "6HU4LvWmDGQaZhhyE4ThME19UYTLWxmWrqZC1LdzMyoz",
   "metadata": {
     "name": "did_registry",
     "version": "0.1.0",
@@ -23,7 +23,28 @@
         {
           "name": "did_entry",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  105,
+                  100,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
         },
         {
           "name": "owner",
@@ -43,6 +64,10 @@
         {
           "name": "did_document",
           "type": "string"
+        },
+        {
+          "name": "_bump",
+          "type": "u8"
         }
       ]
     },
@@ -65,7 +90,10 @@
         },
         {
           "name": "owner",
-          "signer": true
+          "signer": true,
+          "relations": [
+            "did_entry"
+          ]
         }
       ],
       "args": [
