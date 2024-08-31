@@ -1,11 +1,14 @@
 'use client';
-import Page from "../../components/Page/Page";
-import { Button, Col, Form, Input, Row, Select } from "antd";
+import Page from '../../components/Page/Page';
+import { Button, Col, Form, Input, Row, Select, Typography } from 'antd';
 
 export default function Issuer() {
   const [form] = Form.useForm();
   return (
     <Page title="Index">
+      <Typography.Title className="jersey-15-regular">
+        Issue a new VC
+      </Typography.Title>
       <Row>
         <Col lg={4}>
           <Form form={form}>

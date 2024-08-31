@@ -85,7 +85,7 @@ export default function Wallet() {
           <Row>
             <Card title={did}>
               <Row align="middle" gutter={[0, 20]}>
-                <Col lg={12}>
+                <Col lg={2}>
                   <Image
                     src={`https://api.dicebear.com/9.x/pixel-art/png?seed=${did}`}
                     width="40"
