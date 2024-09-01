@@ -3,8 +3,9 @@ import { useCallback } from 'react';
 import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 import * as web3 from '@solana/web3.js';
 import { AnchorProvider, Idl, Program } from '@coral-xyz/anchor';
-import IssuerRegistryInterface from '@/program/interfaces/issuer_registry.json';
 import { notification } from 'antd';
+import IssuerRegistryInterface from '@/program/interfaces/issuer_registry.json';
+import DidRegistryInterface from '@/program/interfaces/did_registry.json';
 
 export function useIssuer() {
   const { publicKey, wallet } = useWallet();
@@ -23,67 +24,86 @@ export function useIssuer() {
     });
   }, [anchorWallet]);
 
-  const registerIssuer = useCallback(
-    async (did: string, didDocument: string) => {
-      const provider = getProvider();
-
-      if (!provider || !publicKey || !anchorWallet) {
-        return;
-      }
-
-      const program = new Program(
-        IssuerRegistryInterface as Idl,
-        provider
-      ) as Program<Idl>;
-
-      if (wallet?.adapter?.publicKey?.toBuffer()) {
-        const [didEntryPda, bump] = PublicKey.findProgramAddressSync(
-          [Buffer.from('did_entry'), wallet?.adapter.publicKey?.toBuffer()],
-          program.programId
-        );
-        await program.rpc
-          .registerIssuer(did, issuerData, {
-            accounts: {
-              issuer: issuer.publicKey,
-              owner: provider.wallet.publicKey,
-              systemProgram: SystemProgram.programId,
-            },
-            signers: [issuer],
-          })
-          .rpc();
-        notification.success({
-          message: 'Did registered successfully',
-          placement: 'bottomRight',
-        });
-      }
-    },
-    [anchorWallet, getProvider, publicKey, wallet?.adapter.publicKey]
-  );
-
-  const getIssuer = useCallback(async () => {
+  const registerIssuer = useCallback(async () => {
     const provider = getProvider();
 
-    if (!provider) {
+    if (!provider || !publicKey || !anchorWallet) {
+      notification.warning({
+        message: 'Wallet not connected',
+        placement: 'bottomRight',
+      });
       return;
     }
 
-    const program = new Program(
+    const tirProgram = new Program(
       IssuerRegistryInterface as Idl,
+      provider
+    ) as Program<Idl>;
+
+    const didProgram = new Program(
+      DidRegistryInterface as Idl,
       provider
     ) as Program<Idl>;
 
     if (wallet?.adapter?.publicKey?.toBuffer()) {
       const [didEntryPda] = PublicKey.findProgramAddressSync(
         [Buffer.from('did_entry'), wallet?.adapter.publicKey?.toBuffer()],
-        program.programId
+        didProgram.programId
       );
-      return program.account.didEntry.fetch(didEntryPda);
+      const [tirEntryPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from('issuer'), wallet?.adapter.publicKey?.toBuffer()],
+        tirProgram.programId
+      );
+      const did = `did:sol:${publicKey.toBase58()}`;
+      console.log({
+        tirEntryPda,
+        didEntryPda: didEntryPda.toString(),
+      });
+      await tirProgram.methods
+        .registerIssuer(did, '')
+        .accounts({
+          issuer: tirEntryPda,
+          owner: provider.publicKey,
+          system_program: SystemProgram.programId,
+        })
+        .rpc();
+      notification.success({
+        message: 'Issuer registered successfully',
+        placement: 'bottomRight',
+      });
     }
-    return null;
+  }, [anchorWallet, getProvider, publicKey, wallet?.adapter.publicKey]);
+
+  const doesIssuerExist = useCallback(async () => {
+    const provider = getProvider();
+
+    if (!provider) {
+      return false;
+    }
+
+    const tirProgram = new Program(
+      IssuerRegistryInterface as Idl,
+      provider
+    ) as Program<Idl>;
+
+    if (wallet?.adapter?.publicKey?.toBuffer()) {
+      const [tirPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from('issuer'), wallet?.adapter.publicKey?.toBuffer()],
+        tirProgram.programId
+      );
+      const connection = new Connection(
+        web3.clusterApiUrl('devnet'),
+        'confirmed'
+      );
+      const accountInfo = await connection.getAccountInfo(tirPda);
+
+      return accountInfo !== null;
+    }
+    return false;
   }, [getProvider, wallet?.adapter.publicKey]);
 
   return {
-    getIssuer,
+    doesIssuerExist,
     registerIssuer,
   };
 }

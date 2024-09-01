@@ -42,6 +42,7 @@ export function useDid() {
           [Buffer.from('did_entry'), wallet?.adapter.publicKey?.toBuffer()],
           program.programId
         );
+
         await program.methods
           .registerDid(did, didDocument, bump)
           .accounts({
@@ -112,6 +113,10 @@ export function useDid() {
         [Buffer.from('did_entry'), wallet?.adapter.publicKey?.toBuffer()],
         program.programId
       );
+      console.log({
+        didEntryPda: didEntryPda.toString(),
+      });
+      // @ts-ignore
       return program.account.didEntry.fetch(didEntryPda);
     }
     return null;

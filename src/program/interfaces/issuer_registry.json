@@ -23,15 +23,30 @@
         {
           "name": "issuer",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
         },
         {
           "name": "owner",
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "did_entry"
         },
         {
           "name": "system_program",
@@ -64,7 +79,26 @@
       "accounts": [
         {
           "name": "issuer",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
         },
         {
           "name": "owner",
@@ -83,19 +117,6 @@
     }
   ],
   "accounts": [
-    {
-      "name": "DidEntry",
-      "discriminator": [
-        97,
-        3,
-        248,
-        216,
-        117,
-        74,
-        83,
-        126
-      ]
-    },
     {
       "name": "Issuer",
       "discriminator": [
@@ -118,26 +139,6 @@
     }
   ],
   "types": [
-    {
-      "name": "DidEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "did",
-            "type": "string"
-          },
-          {
-            "name": "did_document",
-            "type": "string"
-          }
-        ]
-      }
-    },
     {
       "name": "Issuer",
       "type": {
