@@ -1,11 +1,12 @@
 'use client';
-import Page from "../../components/Page/Page";
-import { Button, Col, Descriptions, Modal, Row, Space } from "antd";
-import { Card } from "@/components/Card/Card";
-import React from "react";
-import { EyeOutlined } from "@ant-design/icons";
-import { JsonView, darkStyles } from "react-json-view-lite";
-import "react-json-view-lite/dist/index.css";
+import { Button, Col, Descriptions, Modal, Row, Space } from 'antd';
+import React from 'react';
+import { EyeOutlined } from '@ant-design/icons';
+import { JsonView, darkStyles } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
+
+import { Card } from '@/components/Card/Card';
+import Page from '../../components/Page/Page';
 
 export default function Wallet() {
   return (
@@ -65,7 +66,7 @@ export default function Wallet() {
               icon={<EyeOutlined />}
               onClick={() => {
                 Modal.info({
-                  title: "VC",
+                  title: 'VC',
                   content: (
                     <JsonView
                       data={{}}

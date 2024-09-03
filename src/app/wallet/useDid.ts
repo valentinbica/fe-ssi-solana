@@ -1,28 +1,16 @@
-import * as web3 from '@solana/web3.js';
-import { AnchorProvider, Idl, Program } from '@coral-xyz/anchor';
+import { Idl, Program } from '@coral-xyz/anchor';
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { notification } from 'antd';
 
-import { useCallback, useEffect } from 'react';
-import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
+import { useCallback } from 'react';
+import { PublicKey, SystemProgram } from '@solana/web3.js';
 import DidRegistryInterface from '../../program/interfaces/did_registry.json';
+import { useProvider } from '@/components/Provider/useProvider';
 
 export function useDid() {
   const { publicKey, signTransaction, sendTransaction, wallet } = useWallet();
   const anchorWallet = useAnchorWallet();
-
-  const getProvider = useCallback(() => {
-    if (!anchorWallet) {
-      return null;
-    }
-    const connection = new Connection(
-      web3.clusterApiUrl('devnet'),
-      'confirmed'
-    );
-    return new AnchorProvider(connection, anchorWallet, {
-      preflightCommitment: 'processed',
-    });
-  }, [anchorWallet]);
+  const { getProvider } = useProvider();
 
   const registerDid = useCallback(
     async (did: string, didDocument: string) => {

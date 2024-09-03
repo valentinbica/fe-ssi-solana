@@ -3,20 +3,19 @@ import Page from '../../components/Page/Page';
 import { Button, Col, Form, Input, Row, Select, Spin, Typography } from 'antd';
 import { useIssuer } from '@/app/issuer/useIssuer';
 import { useEffect, useState } from 'react';
+import { useVc } from '@/app/vc/useVc';
 
 export default function Issuer() {
   const [form] = Form.useForm();
   const { registerIssuer, doesIssuerExist } = useIssuer();
   const [issuerExist, setIssuerExist] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { getVc } = useVc();
 
   useEffect(() => {
     setLoading(true);
     doesIssuerExist()
       .then((does) => {
-        console.log({
-          does,
-        });
         setIssuerExist(does);
       })
       .finally(() => {
@@ -37,7 +36,17 @@ export default function Issuer() {
             </Typography.Title>
             <Row>
               <Col lg={4}>
-                <Form form={form}>
+                <Form
+                  form={form}
+                  onFinish={() => {
+                    console.log(form.getFieldValue('schemas'));
+                    console.log(form.getFieldValue('did'));
+                    console.log(form.getFieldValue('from'));
+                    console.log(form.getFieldValue('to'));
+
+                    getVc('did:sol:1234', 'did:sol:1234', 'diploma');
+                  }}
+                >
                   <Form.Item
                     name="schemas"
                     label="Schema"
@@ -78,7 +87,10 @@ export default function Issuer() {
                     <Input />
                   </Form.Item>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit">
+                    <Button
+                      type="primary"
+                      onClick={() => getVc('a', 'b', 'diploma')}
+                    >
                       Create
                     </Button>
                   </Form.Item>

@@ -1,0 +1,153 @@
+{
+  "address": "2qh7d42ADemB3UnaYTUMfBJ7dPu97Jwt8XhC5PrQnCGc",
+  "metadata": {
+    "name": "vc_registry",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "store_verifiable_credential",
+      "discriminator": [
+        203,
+        225,
+        39,
+        224,
+        148,
+        72,
+        103,
+        92
+      ],
+      "accounts": [
+        {
+          "name": "vc_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  99,
+                  95,
+                  101,
+                  110,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "did"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "string"
+        },
+        {
+          "name": "vc",
+          "type": "string"
+        },
+        {
+          "name": "_bump",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "VerifiableCredentialEntry",
+      "discriminator": [
+        159,
+        151,
+        212,
+        43,
+        87,
+        15,
+        70,
+        210
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CredentialStored",
+      "discriminator": [
+        114,
+        139,
+        67,
+        160,
+        103,
+        239,
+        243,
+        95
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "You are not authorized to perform this action."
+    }
+  ],
+  "types": [
+    {
+      "name": "CredentialStored",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "string"
+          },
+          {
+            "name": "vc",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerifiableCredentialEntry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "did",
+            "type": "string"
+          },
+          {
+            "name": "vc",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}
